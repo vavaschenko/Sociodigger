@@ -1,0 +1,70 @@
+#importing all relevant libraries
+import numpy as np
+from matplotlib import pyplot as plt
+import seaborn as sns
+import pandas as pd
+
+#creating a variable that contains data on all publications in the Journal of Urban Health that were found in WoS
+with open('/Users/vasilisavashenko/Downloads/Year_JoUH.clu.txt') as f:
+    lines = f.readlines()
+
+jouh = []
+for i in lines:
+    i = i.rstrip('\n')
+    i = i.lstrip('       ')
+  
+    jouh.append(i)
+
+jouh_f = []
+
+for a in jouh:
+    try:
+        jouh_f.append(int(a))
+    except ValueError:
+        a = 'not an integer' 
+
+jouh_f = [i for i in jouh_f if i != 0]
+
+#creating a variable that contains data on all publications on the topic of Urban Health
+with open('/Users/vasilisavashenko/Downloads/Year_UrbanHealth.clu.txt') as n:
+    lines2 = n.readlines()
+
+uh = []
+for i in lines2:
+    i = i.rstrip('\n')
+    i = i.lstrip('       ')
+    uh.append(i)
+
+uh_f = []
+for a in uh:
+    try:
+        uh_f.append(int(a))
+    except ValueError:
+        a = 'not an integer'
+uh_f = [i for i in uh_f if i != 0]
+
+#setting a threshold for visualization at 1950
+f = [i for i in jouh_f if i >= 1950]
+n = [i for i in uh_f if i >= 1950]
+
+#plotting JoUH and UrbanHalth
+plt.style.use('seaborn-deep')
+bins = 72
+plt.hist([f, n], bins, label=['JoUH', 'Urban Health'])
+plt.legend(loc='upper left')
+plt.show()
+
+#reading files containing hit publications into corresponding variables
+df_JoUH = pd.read_csv('/Users/vasilisavashenko/Downloads/titles.csv', sep = ';')
+df_UH = pd.read_csv('/Users/vasilisavashenko/Downloads/titles-2.csv', sep = ';')
+
+hits_jouh = [i for i in df_JoUH['year'] if i != 0]
+hits_uh = [i for i in df_UH['year'] if i != 0]
+
+#plotting hits
+plt.style.use('seaborn-deep')
+bins = len(set(hits_uh))
+plt.hist([hits_jouh, hits_uh], bins, label=['JoUH', 'Urban Health'])
+plt.legend(loc='upper left')
+plt.show()
+plt.savefig('saved_figure.png', dpi = 1000)
